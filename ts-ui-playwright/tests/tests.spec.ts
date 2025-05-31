@@ -1,7 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Browser, Page, BrowserContext } from '@playwright/test';
 import PagesManager from '../pages/pagesManager';
 import { chromium } from 'playwright'
-import { permission } from 'process';
 
 let pagesManager: PagesManager;
 
@@ -34,24 +33,32 @@ test.describe('Login tests', () => {
     })
 })
 
+let locations = [
+    {latitude: 51.507351, longitude: -0.127758},
+    {latitude:37.386052, longitude:-122.083851},
+];
 
-test.describe('Verify geolocation', async() => {
-    let browser;
-    let context;
-    let page;
+locations.forEach(({latitude, longitude}) => {
+test.describe.only(`Verify geolocation [${latitude}, ${longitude}]`, () => {
+    let browser: Browser;
+    let context: BrowserContext;
+    let page: Page;
 
     test.beforeAll(async () => {
     //launch Chrome browser before all tests
     browser = await chromium.launch({headless:true});
+    pagesManager = new PagesManager(page);
 })
-test.beforeEach(async () => {
+
+    test.beforeEach(async () => {
     //create context (settings) for a browser
-    context = await browser.newContext();
+    context = await pagesManager.geoPage.setGeolocation(browser, latitude, longitude)
     //create new page
     page = await context.newPage();
     //navigate to test url
     await page.goto('/geolocation');
 })
+
     test.afterEach(async () => {
     //close page and context
     await page.close();
@@ -61,17 +68,13 @@ test.afterAll(async () => {
     //close the brower
     await browser.close();
 })
-test('Verify geolocation setting', async() => {
-    context = await browser.newContext({
-        permissions:['geolocation'],
-        geolocation:{latitude:51.507351, longitude: -0.127758 },
-        viewport: {width: 1280, height: 720}
-    })
-    page = await context.newPage();
+
+test(`Verify geolocation setting [${latitude}, ${longitude}]`, async() => {
     await page.click('button');
     const lat = await page.textContent('#lat-value');
     const long = await page.textContent('#long-value');
-    expect(parseFloat(lat)).toBeCloseTo(51.507351);
-    expect(parseFloat(long)).toBeCloseTo(-0.127758);
+    expect(parseFloat(lat!)).toBeCloseTo(latitude);
+    expect(parseFloat(long!)).toBeCloseTo(longitude);
+})
 })
 })

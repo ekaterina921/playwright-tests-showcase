@@ -12,7 +12,7 @@ export default class LoginPage {
         await this.actions.navigate('https://the-internet.herokuapp.com/login')
     }
 
-    async login(username, password){
+    async login(username: string, password: string){
         await this.actions.fill('#username', username)
         await this.actions.fill('#password', password)
         await this.actions.click('button[type="submit"]')
@@ -22,7 +22,7 @@ export default class LoginPage {
         return await this.actions.getText('#flash')
     }
 
-    async assertErrorMessage(expectedMessage){
+    async assertErrorMessage(expectedMessage: string){
         const actualMessage = await this.getErrorMessage()
         expect(actualMessage).toContain(expectedMessage)
     }
