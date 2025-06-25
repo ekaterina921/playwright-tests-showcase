@@ -1,8 +1,10 @@
 import { test, expect, Browser, Page, BrowserContext } from '@playwright/test';
 import PagesManager from '../pages/pagesManager';
 import { chromium } from 'playwright'
+import CommonUtils from '../utils/CommonUtils.ts';
 
 let pagesManager: PagesManager;
+let dateTime: CommonUtils;
 
 test.describe('Login tests', () => {
     test.beforeEach(async ({ page }) => {
@@ -58,12 +60,9 @@ test.describe(`Verify geolocation [${latitude}, ${longitude}]`, () => {
     page = await context.newPage();
     //navigate to test url
     await page.goto('/geolocation');
-    let dateNow: Date = new Date();
-    let dateStr: string = dateNow.toISOString() + '.png';
-    const symbolsToRemove = /[-,!?;:]/g;
-    let newString = dateStr.replace(symbolsToRemove, '');
-    console.log(newString); 
-    await page.screenshot({path: newString});
+    dateTime = new CommonUtils();
+    let dateTimeStr: string = await dateTime.getDateTimeString();
+    await page.screenshot({path: dateTimeStr});
 })
 
     test.afterEach(async () => {
