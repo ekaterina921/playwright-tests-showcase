@@ -16,6 +16,7 @@ test.describe('Login tests', () => {
     test('Verify logging in with valid credentials', async ({ page }) => {
         await pagesManager.loginPage.navigate();
         await pagesManager.loginPage.login('tomsmith', 'SuperSecretPassword!');
+        await page.screenshot({path: 'screenshotLogin.png'});
         await expect(page.locator('#flash')).toContainText(/You logged into a secure area!/);
         await expect(page.locator('h4.subheader')).toContainText('Welcome to the Secure Area. When you are done click logout below.');
     })
@@ -39,14 +40,14 @@ let locations = [
 ];
 
 locations.forEach(({latitude, longitude}) => {
-test.describe.only(`Verify geolocation [${latitude}, ${longitude}]`, () => {
+test.describe(`Verify geolocation [${latitude}, ${longitude}]`, () => {
     let browser: Browser;
     let context: BrowserContext;
     let page: Page;
 
     test.beforeAll(async () => {
     //launch Chrome browser before all tests
-    browser = await chromium.launch({headless:true});
+    browser = await chromium.launch({headless:false});
     pagesManager = new PagesManager(page);
 })
 
@@ -57,6 +58,12 @@ test.describe.only(`Verify geolocation [${latitude}, ${longitude}]`, () => {
     page = await context.newPage();
     //navigate to test url
     await page.goto('/geolocation');
+    let dateNow: Date = new Date();
+    let dateStr: string = dateNow.toISOString() + '.png';
+    const symbolsToRemove = /[-,!?;:]/g;
+    let newString = dateStr.replace(symbolsToRemove, '');
+    console.log(newString); 
+    await page.screenshot({path: newString});
 })
 
     test.afterEach(async () => {
