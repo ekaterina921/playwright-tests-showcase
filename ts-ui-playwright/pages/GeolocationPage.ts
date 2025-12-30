@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test'
+import { Browser, Page } from '@playwright/test'
 import CommonActions from '../utils/CommonActions.ts'
 
 export default class GolocationPage{
@@ -8,7 +8,7 @@ constructor(public page: Page) {
     this.actions = new CommonActions(page);
 }
 
-async setGeolocation(browser, latitude: number, longitude: number){
+async setGeolocation(browser: Browser, latitude: number, longitude: number){
     return await browser.newContext({
         permissions:['geolocation'],
         geolocation:{latitude:latitude, longitude: longitude}
